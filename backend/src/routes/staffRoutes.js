@@ -1,0 +1,10 @@
+const router = require("express").Router();
+const c = require("../controllers/staffController");
+const auth = require("../middleware/auth");
+const authorize = require("../middleware/authorize");
+const { requireFields } = require("../middleware/validate");
+router.use(auth, authorize("admin"));
+router.get("/", c.list);
+router.post("/", requireFields(["fullName", "jobTitle"]), c.create);
+router.patch("/:id", c.update);
+module.exports = router;

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Panel - Kishori Global Hospital</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="style.css">
+<style>
+.admin-wrap{max-width:1100px;margin:30px auto;padding:0 15px}
+.admin-card{background:#fff;border-radius:16px;padding:25px;box-shadow:0 10px 30px rgba(0,0,0,0.08);margin-bottom:25px;transition:0.3s}
+.admin-card:hover{transform:translateY(-3px)}
+.admin-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:15px;margin-bottom:25px}
+.stat-box{background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff;padding:20px;border-radius:16px;text-align:center;transition:0.3s}
+.stat-box:hover{transform:scale(1.03)}
+.stat-box h2{font-size:28px}
+.admin-input{width:100%;padding:12px;border:1px solid #ddd;border-radius:10px;margin:8px 0;transition:0.3s}
+.admin-input:focus{border-color:var(--primary);outline:none;box-shadow:0 0 0 3px rgba(58,158,187,0.15)}
+.admin-table{width:100%;border-collapse:collapse;margin-top:15px}
+.admin-table th{background:var(--secondary);color:#fff;padding:12px;text-align:left}
+.admin-table td{padding:12px;border-bottom:1px solid #eee}
+.login-box{max-width:400px;margin:80px auto}
+</style>
+</head>
+<body>
+<header class="navbar">
+  <div class="container nav-flex">
+    <div class="logo"><img src="logo.png" alt="logo"><span>KISHORI GLOBAL<br><small>Admin Panel</small></span></div>
+    <a href="HOME/index.html" class="btn-primary"><i class="fa-solid fa-house"></i> View Website</a>
+  </div>
+</header>
+
+<div id="loginSection" class="admin-wrap login-box">
+  <div class="admin-card" style="text-align:center">
+    <h2 style="color:var(--secondary)">Admin Login</h2>
+    <input id="adminUser" class="admin-input" placeholder="Username (admin)">
+    <input id="adminPass" type="password" class="admin-input" placeholder="Password (admin123)">
+    <button onclick="login()" class="btn-primary" style="width:100%; margin-top:10px; border:none; cursor:pointer;">Login</button>
+    <p style="font-size:12px; color:#888; margin-top:10px">Demo: admin / admin123</p>
+  </div>
+</div>
+
+<div id="dashboard" class="admin-wrap" style="display:none">
+  <div class="admin-stats">
+    <div class="stat-box"><h2><i class="fa-solid fa-phone"></i></h2><p>Reception 1</p><b>7077772231</b></div>
+    <div class="stat-box" style="background:linear-gradient(135deg,#E63946,#9B1B30)"><h2><i class="fa-solid fa-truck-medical"></i></h2><p>Emergency</p><b>7077772236</b></div>
+    <div class="stat-box"><h2><i class="fa-solid fa-flask"></i></h2><p>Laboratory</p><b>7077772237</b></div>
+    <div class="stat-box"><h2 id="totalApp">0</h2><p>Total Appointments</p></div>
+  </div>
+
+  <div class="admin-card">
+    <h3><i class="fa-solid fa-calendar-plus" style="color:var(--primary)"></i> Add New Appointment (Demo)</h3>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px">
+      <input id="pName" class="admin-input" placeholder="Patient Name">
+      <input id="pPhone" class="admin-input" placeholder="Phone Number">
+      <input id="pDate" type="date" class="admin-input">
+      <select id="pDept" class="admin-input"><option>Cardiology</option><option>Neurology</option><option>Orthopedics</option><option>Gynecology</option><option>Laboratory</option><option>Emergency</option></select>
+    </div>
+    <button onclick="addAppointment()" class="btn-primary" style="border:none;cursor:pointer;margin-top:10px">Add Appointment</button>
+  </div>
+
+  <div class="admin-card">
+    <h3>Recent Appointments</h3>
+    <table class="admin-table">
+      <thead><tr><th>Name</th><th>Phone</th><th>Date</th><th>Department</th><th>Action</th></tr></thead>
+      <tbody id="appTable"></tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+function login(){
+  if(document.getElementById(\'adminUser\').value===\'admin\' && document.getElementById(\'adminPass\').value===\'admin123\'){
+    document.getElementById(\'loginSection\').style.display=\'none\';
+    document.getElementById(\'dashboard\').style.display=\'block\';
+    loadTable();
+  } else { alert(\'Wrong! Use admin / admin123\'); }
+}
+let apps = JSON.parse(localStorage.getItem(\'kgh_apps\')||\'[]\');
+function addAppointment(){
+  let obj={name:pName.value, phone:pPhone.value, date:pDate.value, dept:pDept.value};
+  if(!obj.name||!obj.phone) return alert(\'Name & Phone required\');
+  apps.push(obj);
+  localStorage.setItem(\'kgh_apps\',JSON.stringify(apps));
+  pName.value=pPhone.value=pDate.value=\'\';
+  loadTable();
+}
+function loadTable(){
+  let tbody=document.getElementById(\'appTable\');
+  tbody.innerHTML=\'\';
+  apps.forEach((a,i)=>{
+    tbody.innerHTML+=`<tr><td>${a.name}</td><td><a href="tel:${a.phone}">${a.phone}</a></td><td>${a.date}</td><td>${a.dept}</td><td><button onclick="delApp(${i})" style="background:#E63946;color:#fff;border:none;padding:6px 12px;border-radius:20px;cursor:pointer">Delete</button></td></tr>`;
+  });
+  document.getElementById(\'totalApp\').innerText=apps.length;
+}
+function delApp(i){ apps.splice(i,1); localStorage.setItem(\'kgh_apps\',JSON.stringify(apps)); loadTable(); }
+</script>
+</body>
+</html>

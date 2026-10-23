@@ -1,0 +1,10 @@
+const router = require("express").Router();
+const c = require("../controllers/patientController");
+const auth = require("../middleware/auth");
+const authorize = require("../middleware/authorize");
+const { requireFields, validatePhone } = require("../middleware/validate");
+router.use(auth);
+router.get("/", authorize("admin", "doctor", "nurse", "receptionist"), c.list);
+router.post("/", authorize("admin", "doctor", "nurse", "receptionist"), requireFields(["fullName", "phone"]), validatePhone, c.create);
+router.get("/:id", authorize("admin", "doctor", "nurse", "receptionist"), c.getOne);
+module.exports = router;

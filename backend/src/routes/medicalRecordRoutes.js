@@ -1,0 +1,10 @@
+const router = require("express").Router();
+const c = require("../controllers/medicalRecordController");
+const auth = require("../middleware/auth");
+const authorize = require("../middleware/authorize");
+const { requireFields } = require("../middleware/validate");
+router.use(auth);
+router.get("/", authorize("admin", "doctor", "nurse", "patient"), c.list);
+router.get("/:id", authorize("admin", "doctor", "nurse", "patient"), c.getOne);
+router.post("/", authorize("admin", "doctor"), requireFields(["patient", "recordType", "title", "clinicalContent"]), c.create);
+module.exports = router;
